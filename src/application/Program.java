@@ -16,7 +16,7 @@ public class Program {
 		while (true) {
 			try {
 				UI.clearScreen();
-				UI.printBoard(cM.getPieces());
+				UI.printMatch(cM);
 				System.out.println();
 				System.out.println("Source: ");
 				ChessPosition source = UI.readChessPosition(sc);
