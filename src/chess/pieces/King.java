@@ -74,7 +74,6 @@ public class King extends ChessPiece {
 		if (getBoard().positionExists(p) && canMove(p)) {
 			mat[p.getRow()][p.getColumn()] = true;
 		}
-
 		// #specialmove castling
 		if (getMoveCount() == 0 && !chessMatch.getCheck()) {
 			// kingside rook
