@@ -36,18 +36,6 @@ public class Pawn extends ChessPiece {
 			p.setValues(position.getRow() - 1, position.getColumn() + 1);
 			if (getBoard().positionExists(p) && isThereOpponentPiece(p)) {
 				mat[p.getRow()][p.getColumn()] = true;
-			} // #specialmove en passant white
-			if (position.getRow() == 3) {
-				Position left = new Position(position.getRow(), position.getColumn() - 1);
-				if (getBoard().positionExists(left) && isThereOpponentPiece(left)
-						&& getBoard().piece(left) == chessMatch.getEnPassantVulnerable()) {
-					mat[left.getRow() - 1][left.getColumn()] = true;
-				}
-				Position right = new Position(position.getRow(), position.getColumn() + 1);
-				if (getBoard().positionExists(right) && isThereOpponentPiece(right)
-						&& getBoard().piece(right) == chessMatch.getEnPassantVulnerable()) {
-					mat[left.getRow() - 1][left.getColumn()] = true;
-				}
 			}
 		} else {
 			p.setValues(position.getRow() + 1, position.getColumn());
@@ -68,17 +56,18 @@ public class Pawn extends ChessPiece {
 			if (getBoard().positionExists(p) && isThereOpponentPiece(p)) {
 				mat[p.getRow()][p.getColumn()] = true;
 			}
-			// #specialmove en passant black
-			if (position.getRow() == 4) {
-				Position left = new Position(position.getRow(), position.getColumn() - 1);
-				if (getBoard().positionExists(left) && isThereOpponentPiece(left)
-						&& getBoard().piece(left) == chessMatch.getEnPassantVulnerable()) {
-					mat[left.getRow() + 1][left.getColumn()] = true;
-				}
-				Position right = new Position(position.getRow(), position.getColumn() + 1);
-				if (getBoard().positionExists(right) && isThereOpponentPiece(right)
-						&& getBoard().piece(right) == chessMatch.getEnPassantVulnerable()) {
-					mat[left.getRow() + 1][left.getColumn()] = true;
+		}
+		int direction = getColor() == Color.WHITE ? -1 : 1;
+		int enPassantRow = getColor() == Color.WHITE ? 3 : 4;
+		ChessPiece vulnerable = chessMatch.getEnPassantVulnerable();
+		if (position.getRow() == enPassantRow && vulnerable != null && vulnerable.getColor() != getColor()) {
+			for (int offset = -1; offset <= 1; offset += 2) {
+				int column = position.getColumn() + offset;
+				Position neighbor = new Position(enPassantRow, column);
+				Position target = new Position(enPassantRow + direction, column);
+				if (getBoard().positionExists(neighbor) && getBoard().piece(neighbor) == vulnerable
+						&& !getBoard().thereIsAPiece(target)) {
+					mat[target.getRow()][column] = true;
 				}
 			}
 		}
