@@ -26,6 +26,32 @@ public abstract class ChessPiece extends Piece {
 		return p != null && p.getColor() != color;
 	}
 
+	protected void addOrthogonalMoves(boolean[][] moves) {
+		addLineMoves(moves, -1, 0);
+		addLineMoves(moves, 1, 0);
+		addLineMoves(moves, 0, -1);
+		addLineMoves(moves, 0, 1);
+	}
+
+	protected void addDiagonalMoves(boolean[][] moves) {
+		addLineMoves(moves, -1, -1);
+		addLineMoves(moves, -1, 1);
+		addLineMoves(moves, 1, -1);
+		addLineMoves(moves, 1, 1);
+	}
+
+	private void addLineMoves(boolean[][] moves, int rowStep, int columnStep) {
+		Board board = getBoard();
+		Position target = new Position(position.getRow() + rowStep, position.getColumn() + columnStep);
+		while (board.positionExists(target) && !board.thereIsAPiece(target)) {
+			moves[target.getRow()][target.getColumn()] = true;
+			target.setValues(target.getRow() + rowStep, target.getColumn() + columnStep);
+		}
+		if (board.positionExists(target) && isThereOpponentPiece(target)) {
+			moves[target.getRow()][target.getColumn()] = true;
+		}
+	}
+
 	protected void increaseMoveCount() {
 		this.moveCount++;
 	}
