@@ -219,7 +219,7 @@ public class ChessMatch {
 			Position sourceT = new Position(source.getRow(), source.getColumn() + 3);
 			Position targetT = new Position(source.getRow(), source.getColumn() + 1);
 			ChessPiece rook = (ChessPiece) board.removePiece(targetT);
-			board.placePiece(rook, source);
+			board.placePiece(rook, sourceT);
 			rook.decreaseMoveCount();
 		}
 		if (p instanceof King && target.getColumn() == source.getColumn() - 2) {
@@ -257,8 +257,26 @@ public class ChessMatch {
 	}
 
 	private void validateTargetPosition(Position source, Position target) {
-		if (!board.piece(source).possibleMove(target)) {
+		Piece piece = board.piece(source);
+		if (!piece.possibleMove(target)) {
 			throw new ChessException("The chosen piece can't move to target position");
+		}
+		int columnDistance = target.getColumn() - source.getColumn();
+		if (piece instanceof King && Math.abs(columnDistance) == 2) {
+			if (testCheck(currentPlayer)) {
+				throw new ChessException("You can't castle while in check");
+			}
+			Position crossing = new Position(source.getRow(), source.getColumn() + columnDistance / 2);
+			board.removePiece(source);
+			board.placePiece(piece, crossing);
+			try {
+				if (testCheck(currentPlayer)) {
+					throw new ChessException("You can't castle through check");
+				}
+			} finally {
+				board.removePiece(crossing);
+				board.placePiece(piece, source);
+			}
 		}
 	}
 
